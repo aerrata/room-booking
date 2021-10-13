@@ -7,6 +7,8 @@ use App\Models\Booking;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\BookingStatus;
+use App\Notifications\BookingStatusChanged;
+use Illuminate\Support\Facades\Notification;
 
 class BookingController extends Controller
 {
@@ -146,6 +148,10 @@ class BookingController extends Controller
             'booking_status_id' => $request->booking_status_id,
         ]);
 
+        if ($booking->wasChanged('booking_status_id')) {
+            Notification::send($booking->user, new BookingStatusChanged($booking));
+        }
+        
         return redirect()->route('booking.index')->with('success', 'Booking updated.');
     }
 
