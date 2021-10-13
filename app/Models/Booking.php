@@ -16,6 +16,13 @@ class Booking extends Model
         'end_date' => 'datetime',
     ];
 
+    // Relationships
+    public function booking_status()
+    {
+        return $this->belongsTo(BookingStatus::class);
+    }
+
+    // Accessors
     public function getStartDateFormattedAttribute()
     {
         return $this->start_date ? $this->start_date->format('Y-m-d\TH:i') : null;
