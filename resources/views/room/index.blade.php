@@ -54,8 +54,12 @@
                         @csrf
                         @method('delete')
                     </form>
+                    @can ('edit_room')
                     <a class="btn btn-sm btn-link" href="{{ route('room.edit', $room) }}">Edit</a>
+                    @endcan
+                    @can ('delete_room')
                     <button type="submit" form="form-room-destroy-{{ $room->id }}" onclick="return confirm('Adakah anda pasti?')" class="btn btn-sm btn-link">Delete</button>
+                    @endcan
                 </td>
             </tr>
             @endforeach
@@ -64,7 +68,10 @@
 
     {{ $rooms->links() }}
 
+    @can ('create_room')
     <a href="{{ route('room.create') }}" class="btn btn-primary"><i class="ti ti-plus mr-1"></i> Add</a>
+    @endcan
+
     </div>
 </div>
 @endsection

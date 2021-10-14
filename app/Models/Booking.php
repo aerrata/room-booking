@@ -16,6 +16,11 @@ class Booking extends Model
         'end_date' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
     // Relationships
     public function booking_status()
     {

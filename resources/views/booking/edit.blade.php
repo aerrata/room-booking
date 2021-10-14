@@ -106,6 +106,7 @@
             </div>
 
             @if ($booking->id)
+            @can ('approve_booking')
             <div class="form-group row">
               <label for="booking_status_id" class="col-sm-2 col-form-label">Booking Status</label>
               <div class="col-sm-8">
@@ -125,6 +126,7 @@
                   @enderror
               </div>
             </div>
+            @endcan
             @endif
 
           <div class="d-flex justify-content-end">

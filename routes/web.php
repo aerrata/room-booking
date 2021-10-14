@@ -1,7 +1,9 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +22,36 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/email/verify', function () {
+    return view('auth.verify');
+})->middleware('auth')->name('verification.notice');
 
-Route::middleware(['auth'])->group(function () {
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+
+    return redirect('/home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('auth');
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('room', App\Http\Controllers\RoomController::class);
     Route::resource('booking', App\Http\Controllers\BookingController::class);
     Route::resource('notification', App\Http\Controllers\NotificationController::class);
+});
+
+Route::get('/login-as/{username}', function ($username) {
+    $user = \App\Models\User::where('email', $username . '@domain.com')->first();
+    if ($user) {
+        Auth::loginUsingId($user->id, true);
+    } else {
+        dd('Username not found!');
+    }
+    return redirect()->route('home');
 });
